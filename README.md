@@ -1,15 +1,17 @@
+Forked from https://github.com/lorensr/login-links
+
 Meteor package for sending links that automatically log in the user.
 
-Add this package to your Meteor app with: `meteor add loren:login-links`
+Add this package to your Meteor app with: `meteor add 4fox4:login-links`
 
-The main use case is sending an email or sms to your user with a link to your app that contains an OTP (one-time password)* that automatically logs them in (so they don't have to enter their username/password or do OAuth):
+The main use case is sending an email or sms to your user with a link to your app that contains an OTP (one-time password)\* that automatically logs them in (so they don't have to enter their username/password or do OAuth):
 
 ```
 Josh Owens just commented on your blog post:
 https://my-blog-app.com/post/abc?comment=3?token=A10F51nigkFsShxmvkLnlQ76Kzjh7h9pMuNxpVpO81a
 ```
 
-\* *Note that despite the name, in this package, OTPs can be used multiple times, up until their expiry.*
+\* _Note that despite the name, in this package, OTPs can be used multiple times, up until their expiry._
 
 ## Contents
 
@@ -34,7 +36,6 @@ https://my-blog-app.com/post/abc?comment=3?token=A10F51nigkFsShxmvkLnlQ76Kzjh7h9
 - [Package dev](#package-dev)
   - [Testing](#testing)
 - [Credits](#credits)
-
 
 ## Basic usage
 
@@ -61,9 +62,8 @@ You could also use the token for all of your emails to users, adding it as a que
 
 ```javascript
 if (!Meteor.userId()) {
-  token = // get token from URL (depends on your router and link format)
-
-  LoginLinks.loginWithToken(token, (e, r) => {
+  token = LoginLinks.loginWithToken(token, (e, r) => {
+    // get token from URL (depends on your router and link format)
     if (e) {
       // notify
       return;
@@ -71,7 +71,7 @@ if (!Meteor.userId()) {
 
     // logged in!
   });
-}   
+}
 ```
 
 ## Security note
@@ -98,11 +98,11 @@ Call on both server and client. The default value is one day.
 
 ```javascript
 LoginLinks.setTypes({
-  short: {expirationInSeconds: 10 * 60}, // ten minutes
-  long: {expirationInSeconds: 30 * 24 * 60 * 60} // one month
+  short: { expirationInSeconds: 10 * 60 }, // ten minutes
+  long: { expirationInSeconds: 30 * 24 * 60 * 60 }, // one month
 });
 
-LoginLinks.generateAccessToken(user, {type: 'short'});  
+LoginLinks.generateAccessToken(user, { type: "short" });
 ```
 
 Call on both server and client
@@ -111,7 +111,7 @@ Call on both server and client
 
 ```javascript
 // on server
-LoginLinks.generateAccessToken(user, {expirationInSeconds: 10 * 60}); // ten minutes
+LoginLinks.generateAccessToken(user, { expirationInSeconds: 10 * 60 }); // ten minutes
 ```
 
 ### generateAccessToken
@@ -121,7 +121,7 @@ LoginLinks.generateAccessToken(user, {expirationInSeconds: 10 * 60}); // ten min
 - `user`: `userId` or user object.
 - `opts`: `{type: String}` or `{expirationInSeconds: Integer}`
 
-*Note: If you pass a user object, it has to be a raw object, so if you're using `dburles:collection-helpers` on `Meteor.users`, you have to fetch it with `transform: null`: `Meteor.users.findOne({}, {transform: null})`*
+_Note: If you pass a user object, it has to be a raw object, so if you're using `dburles:collection-helpers` on `Meteor.users`, you have to fetch it with `transform: null`: `Meteor.users.findOne({}, {transform: null})`_
 
 Any additional fields in `opts` will be copied to the stored token that is provided to any [hooks](#hooks).
 
@@ -146,6 +146,7 @@ This is a full login: if it is called before expiration, the login will go throu
 - `cb` is provided `error, data`. `data` has a `userId` field as well as any custom fields on the `token` stored in the database or fields returned from [onConnectionLogin](#onConnectionLogin)
 
 This is a temporary, connection-based login:
+
 - When the connection is broken (eg if you reload the page or call `Meteor.disconnect()`), the user is no longer logged in, unless it's within the expiration window (in which case `connectionLogin` will automatically be called again with the same token)
 - No resume tokens are created.
 - If `connectionLogin` is successful, it will automatically be called inside other browser tabs that are opened later, provided the token hasn't expired.
@@ -153,9 +154,9 @@ This is a temporary, connection-based login:
 The reconnect code uses `Meteor.connection.onReconnect`, so if you redefine it, make sure to save and call the existing hook:
 
 ```javascript
-existingHook = Meteor.connection.onReconnect
+existingHook = Meteor.connection.onReconnect;
 Meteor.connection.onReconnect = () => {
-  existingHook()
+  existingHook();
 
   // then your code
 };
@@ -183,7 +184,7 @@ On a `connectionLogin` reconnect attempt, by default it will call `connectionLog
 
 ## Related packages
 
-- [loren:roles-restricted](https://github.com/lorensr/roles-restricted) - If you want to restrict the permissions that the automatically-logged-in browser has, use this package along with [alanning:roles](https://github.com/alanning/meteor-roles).
+- [4fox4:roles-restricted](https://github.com/4fox4/roles-restricted) - If you want to restrict the permissions that the automatically-logged-in browser has, use this package along with [alanning:roles](https://github.com/alanning/meteor-roles).
 - [accounts-passwordless](https://github.com/acemtp/meteor-accounts-passwordless/)
   - full accounts system (creates new user accounts)
   - no timeout on tokens
@@ -203,7 +204,7 @@ ES6 without semicolons
 ### Testing
 
 ```bash
-git clone git@github.com:lorensr/login-links.git
+git clone git@github.com:4fox4/login-links.git
 cd login-links
 meteor --release 1.3.3.1 test-packages ./
 open localhost:3000
@@ -214,4 +215,4 @@ open localhost:3000
 Thanks to Share911 for sponsoring 👏
 [share911.com](https://share911.com/) – the best emergency response system for your organization.
 
-[Contributors](https://github.com/lorensr/roles-restricted/graphs/contributors)
+[Contributors](https://github.com/4fox4/roles-restricted/graphs/contributors)
