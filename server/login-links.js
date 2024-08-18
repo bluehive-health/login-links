@@ -1,9 +1,10 @@
-Meteor.users._ensureIndex(
-  {'services.accessTokens.tokens.hashedToken': 1},
-  {name: 'login-links:services.accessTokens'})
+import { Meteor } from 'meteor/meteor';
+Meteor.users.createIndexAsync(
+  { 'services.accessTokens.tokens.hashedToken': 1 },
+  { name: 'login-links:services.accessTokens' }
+);
 
-
-_.extend(LoginLinks, {
+Object.assign(LoginLinks, {
 
   /**
    * Generate a token to send and later use for loginWithToken or connectionLogin
@@ -11,34 +12,34 @@ _.extend(LoginLinks, {
    * @param {object} opts - `{type: String}` or `{expirationInSeconds: Integer}`. Any additional fields in `opts` will be copied to the stored token that is provided to any hooks.
    */
   generateAccessToken(user, opts) {
-    let stampedToken,
-        hashStampedToken,
-        update
+    let stampedToken;
+    let hashStampedToken;
 
-    check(user, Match.OneOf(String, Object), '`user` must be a string or basic object')
-    check(opts, Match.Optional(Object))
+    check(user, Match.OneOf(String, Object), '`user` must be a string or basic object');
+    check(opts, Match.Optional(Object));
 
-    if ('string' === typeof user) {
-      user = {_id: user}
-    } else if ('object' !== typeof user) {
-      throw new Error ("login-links error: invalid user argument")
+    if (typeof user === 'string') {
+      user = { _id: user };
+    } else if (typeof user !== 'object') {
+      throw new Error("login-links error: invalid user argument");
     }
 
-    stampedToken = Accounts._generateStampedLoginToken()
-    hashStampedToken = Accounts._hashStampedToken(stampedToken)
+    stampedToken = Accounts._generateStampedLoginToken();
+    hashStampedToken = Accounts._hashStampedToken(stampedToken);
 
-    if (opts)
-      _.extend(hashStampedToken, opts)
+    if (opts) {
+      Object.assign(hashStampedToken, opts);
+    }
 
-    Meteor.users.update(user._id, {
+    Meteor.users.updateAsync(user._id, {
       $push: {
         'services.accessTokens.tokens': hashStampedToken
       }
-    })
+    });
 
     //console.log({hashStampedToken})
 
-    return stampedToken.token
+    return stampedToken.token;
   }, // end generateAccessToken
 
   /**
@@ -54,7 +55,7 @@ _.extend(LoginLinks, {
    * @param {loginHook} hook
    */
   onTokenLogin(hook) {
-    this._tokenLoginHooks.push(hook)
+    this._tokenLoginHooks.push(hook);
   },
 
   _connectionHooks: [],
@@ -64,35 +65,38 @@ _.extend(LoginLinks, {
    * @param {loginHook} hook
    */
   onConnectionLogin(hook) {
-    this._connectionHooks.push(hook)
+    this._connectionHooks.push(hook);
   },
 
   _lookupToken(token) {
-    check(token, String)
+    return new Promise(async (resolve, reject) => {
+      check(token, String);
 
-    let hashedToken = Accounts._hashLoginToken(token)
+      const hashedToken = Accounts._hashLoginToken(token);
 
-    // $elemMatch projection doens't work on nested fields
-    fields = {
-      _id: 1,
-      'services.accessTokens.tokens': 1
-    }
+      // $elemMatch projection doesn't work on nested fields
+      const fields = {
+        _id: 1,
+        'services.accessTokens.tokens': 1
+      };
 
-    user = Meteor.users.findOne({
-      'services.accessTokens.tokens.hashedToken': hashedToken
-    }, {fields})
+      const user = await Meteor.users.findOneAsync({
+        'services.accessTokens.tokens.hashedToken': hashedToken
+      }, { fields });
 
-    if (!user)
-      throw new Meteor.Error('login-links/token-not-found')
+      if (!user) {
+        return reject('login-links/user-token-not-found');
+      }
 
-    let savedToken = _.findWhere(user.services.accessTokens.tokens, {hashedToken})
-    let accessToken = new LoginLinks.AccessToken(savedToken)
+      const savedToken = user.services.accessTokens.tokens.find(t => t.hashedToken === hashedToken);
+      const accessToken = new LoginLinks.AccessToken(savedToken);
 
-    if (accessToken.isExpired)
-      throw new Meteor.Error('login-links/token-expired',
-                             accessToken.expirationReason)
+      if (accessToken.isExpired) {
+        return reject('login-links/token-expired: ' + accessToken.expirationReason);
+      }
 
-    return {user, savedToken}
-  } // end _lookupToken
+      resolve({ user, savedToken });
+    });
+  }
 
-}) // end _.extend(LoginLinks, ...)
+}); // end Object.assign(LoginLinks, ...)

@@ -1,8 +1,8 @@
-Forked from https://github.com/lorensr/login-links
+Now supports Meteor > 3.0.0
 
 Meteor package for sending links that automatically log in the user.
 
-Add this package to your Meteor app with: `meteor add 4fox4:login-links`
+Add this package to your Meteor app with: `meteor add bluehive:login-links`
 
 The main use case is sending an email or sms to your user with a link to your app that contains an OTP (one-time password)\* that automatically logs them in (so they don't have to enter their username/password or do OAuth):
 
@@ -212,7 +212,4 @@ open localhost:3000
 
 ## Credits
 
-Thanks to Share911 for sponsoring 👏
-[share911.com](https://share911.com/) – the best emergency response system for your organization.
-
-[Contributors](https://github.com/4fox4/roles-restricted/graphs/contributors)
+Forked from https://github.com/4fox4/login-links that was forked from https://github.com/lorensr/login-links

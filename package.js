@@ -1,14 +1,14 @@
 Package.describe({
-  name: "4fox4:login-links",
+  name: "bluehive:login-links",
   version: "0.1.4",
   summary:
     "Send links that automatically login the user with OTPs (one-time passwords)",
-  git: "https://github.com/4fox4/login-links.git",
+  git: "https://github.com/bluehive-health/login-links.git",
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom(["1.3.3.1", "2.4"]);
-  api.use(["ecmascript", "underscore", "accounts-base", "mongo", "check"]);
+  api.versionsFrom(["3.0.2"]);
+  api.use(["ecmascript", "accounts-base", "mongo", "check"]);
 
   api.addFiles(["common/login-links.js", "common/accessToken.js"]);
 
@@ -29,12 +29,11 @@ Package.onUse(function (api) {
 
 Package.onTest(function (api) {
   api.use([
-    "4fox4:login-links",
+    "bluehive:login-links",
     "ecmascript",
     "tinytest",
     "meteor-base",
     "accounts-password",
-    "underscore",
   ]);
 
   api.addFiles("tests/helpers.js");

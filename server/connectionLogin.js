@@ -1,25 +1,30 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.methods({
-
   'login-links/connectionLogin': function (token) {
-    let {user, savedToken} = LoginLinks._lookupToken(token)
-    l('connectionLogin user:', user._id)
+    console.log('login-links/connectionLogin method called with token:', token);
+    LoginLinks._lookupToken(token).then(function ({ user, savedToken }) {
+      console.log('connectionLogin user:', user._id);
 
-    if (Meteor.userId() === user._id)
-      throw new Meteor.Error('login-links/already-fully-logged-in')
+      if (Meteor.userId() === user._id) {
+        throw new Meteor.Error('login-links/already-fully-logged-in');
+      }
 
-    this.setUserId(user._id)
+      this.setUserId(user._id);
 
-    let data = _.omit(savedToken, 'hashedToken')
+      let { hashedToken, ...data } = savedToken;
 
-    for (let hook of LoginLinks._connectionHooks) {
-      value = hook(savedToken, user)
-      if (typeof value === 'object')
-        _.extend(data, value)
-    }
+      for (let hook of LoginLinks._connectionHooks) {
+        let value = hook(savedToken, user);
+        if (typeof value === 'object')
+          Object.assign(data, value);
+      }
 
-    data.userId = user._id
+      data.userId = user._id;
 
-    return data
+      return data;
+    }).catch(function (e) {
+      console.error('connectionLogin error:', e);
+      throw new Meteor.Error('login-links/connectionLogin-error', e.message);
+    });
   }
-
-})
+});
