@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom(["3.0.2"]);
+  api.versionsFrom(["3.0.3"]);
   api.use(["ecmascript", "accounts-base", "mongo", "check"]);
 
   api.addFiles(["common/login-links.js", "common/accessToken.js"]);
