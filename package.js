@@ -1,13 +1,13 @@
 Package.describe({
   name: "bluehive:login-links",
-  version: "0.1.4",
+  version: "0.1.5",
   summary:
     "Send links that automatically login the user with OTPs (one-time passwords)",
   git: "https://github.com/bluehive-health/login-links.git",
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom(["3.0.3"]);
+  api.versionsFrom(["3.0.2"]);
   api.use(["ecmascript", "accounts-base", "mongo", "check"]);
 
   api.addFiles(["common/login-links.js", "common/accessToken.js"]);
