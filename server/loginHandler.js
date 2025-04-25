@@ -5,7 +5,7 @@ Accounts.registerLoginHandler('login-links', async function (loginRequest) {
 
   if (!token) {
     console.log('login-links/Accounts.registerLoginHandler no token');
-    return undefined;
+    return undefined; // don't handle (This allows another loginhandler to handle it.)
   }
 
   try {
