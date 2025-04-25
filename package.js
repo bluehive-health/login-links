@@ -1,6 +1,6 @@
 Package.describe({
   name: "bluehive:login-links",
-  version: "0.1.4",
+  version: "0.1.5",
   summary:
     "Send links that automatically login the user with OTPs (one-time passwords)",
   git: "https://github.com/bluehive-health/login-links.git",
